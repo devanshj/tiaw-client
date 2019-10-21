@@ -2,7 +2,7 @@ import remoteFunctionFor from "./remote-functions";
 import remoteSubjectSubscribeFor from "./remote-subject";
 
 export const connect = async () => {
-	let socket = new WebSocket(`ws://${window.location.hostname}:5000/`);
+	let socket = new WebSocket(`wss://tiaw.herokuapp.com/`);
 	await new Promise(r => socket.onopen = r);
 
 	setInterval(() => socket.send("ping"), 1000);
