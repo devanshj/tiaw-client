@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { ApiContext, IdentityContext } from "../../context";
-import { Queuee, Queue, QueueForAccessor } from "../../api/types";
+import { Queuee, QueueForAccessor } from "../../api/types";
 import { css } from "linaria";
 import { rem } from "polished";
 import Logo from "../Logo";
 import FadeInUp from "../animation/FadeInUp";
 import Button from "../ui/Button";
-import { transitionDuration, colors } from "../../styles";
+import { colors } from "../../styles";
 
 const AccessPage = () => {
 	let api = useContext(ApiContext);

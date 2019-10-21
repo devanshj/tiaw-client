@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import FormInput from "../ui/FormInput";
-import FormSelect from "../ui/FormSelect";
 import Button from "../ui/Button";
 import { ReactComponent as ArrowRightIcon } from "../../assets/blueprintjs-icons/arrow-right-16px.svg";
 import { css } from "linaria";

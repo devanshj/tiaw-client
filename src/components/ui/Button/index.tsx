@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "linaria";
-import { rem, transparentize } from "polished";
+import { rem } from "polished";
 import { colors } from "../../../styles";
 
 const Button = ({ label, after = null, ...props }: {
