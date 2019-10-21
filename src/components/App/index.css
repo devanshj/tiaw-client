@@ -9,9 +9,18 @@ body {
 	font-family: "Raleway";
 }
 
-input, button, select, textarea {
+#root {
+	height: 100%;
+	overflow: hidden;
+}
+
+input, button, select, textarea, a {
 	font: inherit;
 	color: inherit;
+}
+
+a {
+	text-decoration: none;
 }
 
 :focus {

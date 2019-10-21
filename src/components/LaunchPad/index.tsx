@@ -9,6 +9,8 @@ import { ReactComponent as QueueSvg } from "../../assets/queue.svg";
 import ArrowIcon from "../ui/ArrowIcon";
 import CreateQueuePage from "./CreateQueuePage";
 import EnterQueuePage from "./EnterQueuePage";
+import IdentityPage from "./IdentityPage";
+import Logo from "../Logo";
 
 type ActionPage =
 	| "ENTER_QUEUE"
@@ -29,7 +31,7 @@ const LaunchPad = () => {
 		window.addEventListener("popstate", ({ state }) => {
 			setCurrentPage(state.currentPage);
 		});
-	}, [])
+	}, [currentPage])
 
 	
 
@@ -70,12 +72,15 @@ const LaunchPad = () => {
 			top: ${rem(100)};
 			z-index: 4;
 			color: ${colors.white0}
-		`}>
+		`} style={{ bottom: ["CREATE_QUEUE", "ENTER_QUEUE", "IDENTITY_CODE"].includes(currentPage) ? 0 : ""}}>
 			{currentPage === "CREATE_QUEUE" && (
 				<CreateQueuePage/>
 			)}
 			{currentPage === "ENTER_QUEUE" && (
 				<EnterQueuePage/>
+			)}
+			{currentPage === "IDENTITY_CODE" && (
+				<IdentityPage/>
 			)}
 		</div>
 	</div>
@@ -250,29 +255,7 @@ const Header = ({ isBackable, onBack = () => {} }: { isBackable: boolean, onBack
 				transitiondelay: !isBackable ? `${transitionDuration/2}s` : "",
 				...easingStyle
 			}}/>
-		<div className={css`
-			display: flex;
-			align-items: center;
-			margin-bottom: ${rem(30)};
-
-			color: ${colors.primary};
-		`}>
-			<h1 className={css`
-				display: block;
-				font-size: ${rem(56)};
-
-				/* optical alignment */
-				margin-left: -2px;
-				margin-top: -0.11em;
-				height: 0.75em;
-
-				font-weight: 400;
-				font-family: "Josefin Sans";
-				user-select: none;
-			`}>
-				TIAW
-			</h1>
-		</div>
+		<Logo className={css`margin-bottom: ${rem(30)}`}/>
 	</>
 }
 

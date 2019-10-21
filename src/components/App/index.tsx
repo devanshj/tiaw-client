@@ -9,30 +9,49 @@ import { ApiContext, IdentityContext, IdentityValue } from "../../context";
 import AccessPage from "../AccessPage";
 import TokenPage from "../TokenPage";
 
-let accessMatch = document.cookie.match(/(?:^|;)\saccessCode=([^; ]*)/);
-let tokenMatch = document.cookie.match(/(?:^|;)\stokenCode=([^; ]*)/);
-let initialIdentity: IdentityValue = 
-	accessMatch ? { code: accessMatch[1], type: "ACCESS" } :
-	tokenMatch ? { code: tokenMatch[1], type: "TOKEN" } :
-	{ code: null };
+
 
 const App = () => {
 	let [api, setApi] = useState<Api|null>(null);
-	let [identity, setIdentity] = useState<IdentityValue>(initialIdentity);
+	let [identity, setIdentity] = useState<IdentityValue | null>(null);
 
 	useEffect(() => {
-		connect().then(setApi);
-	}, []);
+		connect().then(async api => {
+			let code = localStorage.getItem("identityCode");
+			if (!code) {
+				setIdentity({ code: null });
+				setApi(api);
+				return;
+			}
 
+			let type = await api.remoteFunction("VERIFY_IDENTITYCODE")({
+				identityCode: code
+			});
+
+			if (type === "INVALID") {
+				setIdentity({ code: null });
+				setApi(api);
+				return;
+			}
+
+			setIdentity({ code, type });
+			setApi(api);
+		});
+	}, []);
+	
 	useEffect(() => {
 		// @ts-ignore
 		window.api = api;
 	}, [api]);
 
 	useEffect(() => {
-		document.cookie = identity.code
-			? identity.type.toLowerCase() + "Code=" + identity.code + "; "
-			: "";
+		if (identity === null) return;
+
+		if (identity.code) {
+			localStorage.setItem("identityCode", identity.code);
+		} else {
+			localStorage.removeItem("identityCode");
+		}
 	}, [identity]);
 
 	useEffect(() => {
@@ -42,7 +61,7 @@ const App = () => {
 		window.dispatchEvent(new Event("resize"));
 	}, []);
 
-	return api ? <ApiContext.Provider value={api}>
+	return api && identity ? <ApiContext.Provider value={api}>
 		<IdentityContext.Provider value={{
 			value: identity,
 			set: setIdentity

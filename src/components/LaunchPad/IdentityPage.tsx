@@ -10,36 +10,38 @@ import { transitionDuration } from "../../styles";
 import FadeInUp from "../animation/FadeInUp";
 import { ApiContext, IdentityContext } from "../../context";
 
-const CreateQueuePage = () => {
-	let [name, setName] = useState("");
+const IdentityPage = () => {
+	let [identityCode, setIdentityCode] = useState("");
 	let api = useContext(ApiContext);
 	let identity = useContext(IdentityContext);
-	let [isQueueeStrengthable, setIsQueueeStrengthable] = useState(false);
-	let [isCreating, setIsCreating] = useState(false);
+	let [codeVerification, setCodeVerification] = useState<
+		| "INITIAL"
+		| "ERROR"
+		| "SUCCESS"
+		| "VERIFYING"
+	>("INITIAL");
 
-	return <form onSubmit={event => {
+	return <form onSubmit={async event => {
 		event.preventDefault();
-		setIsCreating(true);
-		api.remoteFunction("INSERT_QUEUE")({
-			name, isQueueeStrengthable
-		}).then(({ accessCode }) => {
-			identity.set({ code: accessCode, type: "ACCESS" });
-		})
+		setCodeVerification("VERIFYING");
+		let type = await api.remoteFunction("VERIFY_IDENTITYCODE")({ identityCode })
+		if (type === "INVALID") {
+			setCodeVerification("ERROR");
+		} else {
+			identity.set({ code: identityCode, type });
+		}
 	}}>
 		<FadeInDown delay={transitionDuration}>
 			<FormInput
-				label="Name"
-				value={name}
-				onChange={e => setName(e.target.value)}
+				label="Identity code"
+				value={identityCode}
+				errorMessage={
+					codeVerification === "ERROR"
+						? "No such identity code found"
+						: false
+				}
+				onChange={e => setIdentityCode(e.target.value)}
 				required/>
-		</FadeInDown>
-		
-		<FadeInDown delay={transitionDuration*1.5}>
-			<FormSelect
-				label="Can queuee be with a group?"
-				value={Number(isQueueeStrengthable)}
-				onChange={v => setIsQueueeStrengthable(!!v)}
-				options={["No", "Yes"]}/>
 		</FadeInDown>
 
 		<div  className={css`
@@ -49,11 +51,10 @@ const CreateQueuePage = () => {
 		`}>
 			<FadeInUp delay={transitionDuration}>
 				<Button
-					label={isCreating ? "Creating..." : "Create"}
-					disabled={isCreating}
+					label={codeVerification === "VERIFYING" ? "Verifying..." : "Verify"}
+					disabled={codeVerification === "VERIFYING"}
 					after={
-						// TODO: animate this
-						!isCreating && <ArrowRightIcon className={css`
+						codeVerification !== "VERIFYING" && <ArrowRightIcon className={css`
 							height: ${rem(16)};
 							margin-left: ${rem(10)};
 						`}/>
@@ -62,4 +63,4 @@ const CreateQueuePage = () => {
 		</div>
 	</form>
 }
-export default CreateQueuePage;
+export default IdentityPage;
