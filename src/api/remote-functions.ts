@@ -79,7 +79,6 @@ const remoteFunction = async <K extends keyof RemoteFunctions>(
 
 	return new Promise(resolve => {
 		let dispose = onMessage(socket, data => {
-			console.log(data);
 			if (data.type === "REMOTE_FUNCTION_RETURN" && data.identifier === identifier) {
 				dispose();
 				resolve(data.value);
